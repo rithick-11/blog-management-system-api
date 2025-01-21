@@ -23,7 +23,7 @@ const sentToken = async (email, token) => {
             from:fromMail,
             to: email,
             subject:"blog verification link",
-            html: `verify your e-mail <a href="http://localhost:5002/api/user/verify/${token}">click here </a>`
+            html: `verify your e-mail <a href="http://localhost:5002/api/auth/verify/${token}">click here </a>`
         })
         return true
     }catch(err){

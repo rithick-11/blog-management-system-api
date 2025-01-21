@@ -1,10 +1,10 @@
 const express = require("express");
-const dotenv = require("dotenv");
+const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 
-const userRouter = require("./routes/userRouter");
-
-dotenv.config();
+const authRouter = require("./routes/authRouter");
+const usersRouter = require("./routes/userRouter");
+const blogRouter = require("./routes/blogRouter")
 
 const app = express();
 
@@ -21,8 +21,13 @@ const startServerAndConnectDb = async () => {
   });
 };
 
+//middleware
 app.use(express.json());
-app.use("/api/user", userRouter);
+
+//routes
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter)
+app.use("/api/blog", blogRouter)
 app.get("/", (req, res) => res.send("server working"));
 
 startServerAndConnectDb();
