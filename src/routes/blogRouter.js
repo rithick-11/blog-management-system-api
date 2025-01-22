@@ -17,7 +17,7 @@ router.get("/blog/:blogId", getBlogById);
 router.post(
   "/create",
   authentication,
-  authorization("admin", "editor"),
+  authorization("admin"),
   createBlog
 );
 router.get(
@@ -35,7 +35,7 @@ router.put(
 router.delete(
   "/delete/:blogId",
   authentication,
-  authorization("admin", "editor"),
+  authorization("admin"),
   deleteBlog
 );
 

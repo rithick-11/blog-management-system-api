@@ -6,7 +6,7 @@ const { addComment, deleteComment } = require("../controllers/commentController"
 
 const router = express.Router()
 
-router.post("/add/:blogId", authentication, authorization("admin", "editor", "user"), addComment)
+router.post("/add/:blogId", authentication, addComment)
 router.delete("/delete/:commentId", authentication, deleteComment)
 
 

@@ -53,87 +53,98 @@ const signupUser = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-  const { token } = req.params;
-  const hashToken = crypto.createHash("sha256").update(token).digest("hex");
-  const user = await User.findOne({ verificationtoken: hashToken });
+  try {
+    const { token } = req.params;
+    const hashToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({ verificationtoken: hashToken });
 
-  if (!user) {
-    return res.status(404).json({ message: "link exprinded" });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid link" });
+    }
+    if (user.verified) {
+      return res.status(200).json({ message: "user already verifyed" });
+    }
+    if (user.verificationvalidity < Date.now()) {
+      return res.status(401).json({ message: "verification link expired" });
+    }
+    user.verified = true;
+    user.save();
+    return res.json({ message: "verifyed" });
+  } catch (err) {
+    return res.status(404).json({ message: `somethig went worng` });
   }
-  if (user.verified) {
-    return res.status(404).json({ message: "user already verifyed" });
-  }
-  if (user.verificationvalidity < Date.now()) {
-    return res.status(401).json({ message: "verification expried" });
-  }
-  user.verified = true;
-  user.save();
-  return res.json({ message: "verifyed" });
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  if (email === undefined) {
-    return res.status(400).json({ message: "email required" });
+    if (email === undefined) {
+      return res.status(400).json({ message: "email required" });
+    }
+    if (password === undefined) {
+      return res.status(400).json({ message: "password required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    const isCorrectPass = await user.verifyPassword(password);
+
+    if (!isCorrectPass) {
+      return res.status(400).json({ message: "worng password" });
+    }
+
+    if (!user.verified) {
+      return res.status(403).json({ message: "verify your email id" });
+    }
+
+    const token = await jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "3h" }
+    );
+
+    return res.status(200).json({ token });
+  } catch (err) {
+    return res.status(404).json({ message: `somethig went worng` });
   }
-  if (password === undefined) {
-    return res.status(400).json({ message: "password required" });
-  }
-
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res.status(404).json({ message: "user not found" });
-  }
-
-  const isCorrectPass = await user.verifyPassword(password);
-
-  if (!isCorrectPass) {
-    return res.status(404).json({ message: "worng password" });
-  }
-
-  if (!user.verified) {
-    return res.status(403).json({ message: "verify you email id" });
-  }
-
-  const token = await jwt.sign(
-    { id: user._id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "3h" }
-  );
-
-  return res.status(202).json({ message: "user login", token });
 };
 
 const resendVerifyLink = async (req, res) => {
   try {
     const { email } = req.query;
+    if (
+      email === "" ||
+      !email ||
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+    ) {
+      return res.status(400).json({ message: "enter valid email" });
+    }
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "user not found" });
     }
     if (user.verified) {
-      return res.status(404).json({ message: "user already verifyed" });
+      return res.status(200).json({ message: "user already verifyed" });
     }
 
     const token = user.generateVerificationToken();
 
     if (!(await sentToken(email, token))) {
-      return res.status(400).json({ message: `somethig went worng` });
+      return res.status(404).json({ message: `somethig went worng` });
     }
 
     await user.save();
 
-    return res
-      .status(200)
-      .json({
-        message: "verfication resented thorugh email, verify your mail",
-      });
+    return res.status(200).json({
+      message: "verfication link resented thorugh email, verify your email",
+    });
   } catch (err) {
-    console.log(err);
-    
-    return res.status(400).json({ message: `somethig went worng` });
+    return res.status(404).json({ message: `somethig went worng` });
   }
 };
 

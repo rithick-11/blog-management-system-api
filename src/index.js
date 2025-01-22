@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
+const cors = require("cors")
 
 const authRouter = require("./routes/authRouter");
 const usersRouter = require("./routes/userRouter");
@@ -23,6 +24,7 @@ const startServerAndConnectDb = async () => {
 };
 
 //middleware
+app.use(cors())
 app.use(express.json());
 
 //routes
