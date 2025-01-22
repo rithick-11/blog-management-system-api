@@ -3,7 +3,7 @@
 ## **Base URL**
 
 ```
-http://localhost:3000
+https://blog-management-system-api.vercel.app
 ```
 
 ---
