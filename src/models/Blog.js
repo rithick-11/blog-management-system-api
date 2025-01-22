@@ -15,6 +15,11 @@ const blogSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    editor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    },
     comments: {
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
       default:[]

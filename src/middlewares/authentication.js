@@ -16,7 +16,11 @@ const authentication = async (req, res, next) => {
   try {
     const data = await jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({_id:data.id})
-
+    
+    if(!user.verified){
+      return res.status(404).json({message:"verify your email"})
+    }
+    
     req.user = {
         id: user._id,
         role: user.role
@@ -24,7 +28,7 @@ const authentication = async (req, res, next) => {
     
     next();
   } catch (err) {
-    return res.status(400).json({ message: "invalid token" });
+    return res.status(400).json({ message: err.message });
   }
 };
 

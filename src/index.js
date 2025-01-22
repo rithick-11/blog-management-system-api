@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const authRouter = require("./routes/authRouter");
 const usersRouter = require("./routes/userRouter");
 const blogRouter = require("./routes/blogRouter")
+const commentRouter = require("./routes/commentRouter")
 
 const app = express();
 
@@ -27,7 +28,8 @@ app.use(express.json());
 //routes
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter)
-app.use("/api/blog", blogRouter)
+app.use("/api/blogs", blogRouter)
+app.use("/api/comments", commentRouter)
 app.get("/", (req, res) => res.send("server working"));
 
 startServerAndConnectDb();

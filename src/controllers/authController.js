@@ -1,7 +1,8 @@
 const User = require("../models/User");
 const crypto = require("crypto");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const { sentToken } = require("../utils/sentMail");
+const { log } = require("console");
 
 const signupUser = async (req, res) => {
   try {
@@ -18,14 +19,15 @@ const signupUser = async (req, res) => {
     if (userData.name === undefined) {
       return res.status(400).json({ message: "name required" });
     }
-    if(! /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(userData.email)){
-      return res.status(400).json({message : "enter vaild mail "})
+    if (
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(userData.email)
+    ) {
+      return res.status(400).json({ message: "enter vaild mail " });
     }
     if (userData.role === undefined) {
       userData.role = "user";
     }
-    
-    
+
     if (userExist) {
       return res
         .status(400)
@@ -44,9 +46,9 @@ const signupUser = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "user created successfully", token });
+      .json({ message: "verfication sented thorugh email, verify your mail" });
   } catch (err) {
-    return res.status(404).json({message: "someething went worng"})
+    return res.status(404).json({ message: "someething went worng" });
   }
 };
 
@@ -55,8 +57,8 @@ const verifyEmail = async (req, res) => {
   const hashToken = crypto.createHash("sha256").update(token).digest("hex");
   const user = await User.findOne({ verificationtoken: hashToken });
 
-  if(!user){
-    return res.status(404).json({message:"link exprinded"})
+  if (!user) {
+    return res.status(404).json({ message: "link exprinded" });
   }
   if (user.verified) {
     return res.status(404).json({ message: "user already verifyed" });
@@ -79,25 +81,60 @@ const login = async (req, res) => {
     return res.status(400).json({ message: "password required" });
   }
 
-  const user = await User.findOne({email})
+  const user = await User.findOne({ email });
 
-  if(!user){
-    return res.status(404).json({message:"user not found"})
+  if (!user) {
+    return res.status(404).json({ message: "user not found" });
   }
 
-  const isCorrectPass = await user.verifyPassword(password)
+  const isCorrectPass = await user.verifyPassword(password);
 
-  if(!isCorrectPass){
-    return res.status(404).json({message: "worng password"})
+  if (!isCorrectPass) {
+    return res.status(404).json({ message: "worng password" });
   }
 
-  if(!user.verified){
-    return res.status(403).json({message: "verify you email id"})
+  if (!user.verified) {
+    return res.status(403).json({ message: "verify you email id" });
   }
 
-  const token = await jwt.sign({id:user._id, role:user.role}, process.env.JWT_SECRET, {expiresIn: "3h"})
+  const token = await jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "3h" }
+  );
 
-  return res.status(202).json({message: "user login", token})
+  return res.status(202).json({ message: "user login", token });
 };
 
-module.exports = { signupUser, verifyEmail, login };
+const resendVerifyLink = async (req, res) => {
+  try {
+    const { email } = req.query;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+    if (user.verified) {
+      return res.status(404).json({ message: "user already verifyed" });
+    }
+
+    const token = user.generateVerificationToken();
+
+    if (!(await sentToken(email, token))) {
+      return res.status(400).json({ message: `somethig went worng` });
+    }
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json({
+        message: "verfication resented thorugh email, verify your mail",
+      });
+  } catch (err) {
+    console.log(err);
+    
+    return res.status(400).json({ message: `somethig went worng` });
+  }
+};
+
+module.exports = { signupUser, verifyEmail, login, resendVerifyLink };
