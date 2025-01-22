@@ -29,4 +29,30 @@ const addComment = async (req, res) => {
   }
 };
 
-module.exports = {addComment}
+const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const comment = await Comment.findOne({ _id: commentId });
+    if (!comment) {
+      return res.status(404).json({ message: "comment not found" });
+    }
+    if (comment.author.toString() !== req.user.id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "no access to delete this comment" });
+    }
+
+    const blog = await Blog.findOne({
+      _id: comment.blog,
+    });
+    blog.comments.remove(commentId);
+    await blog.save();
+    await Comment.deleteOne({ _id: commentId });
+    return res.status(202).json({ message: "comment deleted successfully" });
+  } catch (err) {
+    console.log(err);
+    return res.status(404).json({ message: "Something went worng" });
+  }
+};
+
+module.exports = { addComment, deleteComment };

@@ -1,4 +1,5 @@
 const Blog = require("../models/Blog");
+const Comment = require("../models/Comment");
 const User = require("../models/User");
 
 const getBlog = async (req, res) => {
@@ -9,9 +10,33 @@ const getBlog = async (req, res) => {
     })
     .populate({
       path: "comments",
+      select:"text author",
       populate: { path: "author", select: "name" },
     });
-  return res.status(202).json({ blogs });
+  return res.status(202).json({ blogList: blogs, total: blogs.length });
+};
+
+const getBlogById = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const blog = await Blog.findOne({ _id: blogId })
+      .populate({
+        path: "comments",
+        select: "text author",
+        populate: {
+          path: "author",
+          select: "name",
+        },
+      })
+      .populate({ path: "author", select: "name" });
+    if (!blog) {
+      return res.status(404).json({ message: "blog not found" });
+    }
+    return res.status(200).json({ blog: blog });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  const { blogId } = req.params;
 };
 
 const createBlog = async (req, res) => {
@@ -95,10 +120,18 @@ const deleteBlog = async (req, res) => {
       }
     }
     await Blog.deleteOne({ _id: blogId });
+    await Comment.deleteMany({ blog: blogId });
     return res.status(202).json({ message: "Blog deleted succesfully" });
   } catch (err) {
     return res.status(404).json({ message: "Something went worng" });
   }
 };
 
-module.exports = { createBlog, getBlog, editBlog, deleteBlog, asignEditor };
+module.exports = {
+  createBlog,
+  getBlog,
+  getBlogById,
+  editBlog,
+  deleteBlog,
+  asignEditor,
+};

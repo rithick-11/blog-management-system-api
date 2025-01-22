@@ -7,11 +7,13 @@ const {
   editBlog,
   deleteBlog,
   asignEditor,
+  getBlogById,
 } = require("../controllers/blogController");
 const authentication = require("../middlewares/authentication");
 const authorization = require("../middlewares/authorization");
 
 router.get("/", getBlog);
+router.get("/blog/:blogId", getBlogById);
 router.post(
   "/create",
   authentication,
