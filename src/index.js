@@ -32,6 +32,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter)
 app.use("/api/blogs", blogRouter)
 app.use("/api/comments", commentRouter)
-app.get("/", (req, res) => res.send("server working"));
+app.get("/", (req, res) => res.send(`RESTful Blog Management API server is runnging <a href="https://github.com/rithick-11/blog-management-system-api" target="_blank">click here </a> to read API documentaion`));
 
 startServerAndConnectDb();
