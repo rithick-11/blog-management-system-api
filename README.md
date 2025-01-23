@@ -220,6 +220,39 @@ https://blog-management-system-api.vercel.app
 
     _`Reason:-` If invalid email id provided_.
 
+### **5. Fetch user**
+  - **URL**: `/api/users/user`
+  - **Method**: `GET`
+  - **Description**: To get user data.
+  - **Request Header**:
+    ```json
+    {
+      "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9........"
+    }
+    ```
+  - **Request Body**:
+    ```json
+    {
+      "email": "rithickroshan7878@gmail.com",
+      "password": "admin@123"
+    }
+    ```
+  - **Response**:
+
+    - **200 OK**:
+
+      ```json
+      {
+          "_id": "6791d93d57c8739f458744e1",
+          "name": "RithickROshan S",
+          "email": "rithickroshan7878@gamil.com",
+          "role": "admin",
+          "verified": true,
+          "createdAt": "2025-01-23T05:53:05.002Z",
+          "updatedAt": "2025-01-23T05:54:16.864Z"
+      }
+      ```
+
 ## **Blogs**
 
 ### **1. Get All Blogs**
@@ -319,7 +352,6 @@ https://blog-management-system-api.vercel.app
     "content": "This is the content of the blog post."
   }
   ```
-  
 - **Response**:
   - **201 Created**:
     ```json
@@ -347,6 +379,7 @@ https://blog-management-system-api.vercel.app
   }
   ```
 - **Response**:
+
   - **200 OK**:
     ```json
     {
@@ -354,11 +387,13 @@ https://blog-management-system-api.vercel.app
     }
     ```
   - **401 Unauthorized**:
+
     ```json
     {
       "message": "Access denied"
     }
     ```
+
     _`Reason:-` Admin only had access to assign the editor_.
 
   - **404 Bad Request**:
@@ -388,6 +423,7 @@ https://blog-management-system-api.vercel.app
   }
   ```
 - **Response**:
+
   - **200 OK**:
     ```json
     {
@@ -402,11 +438,13 @@ https://blog-management-system-api.vercel.app
     ```
     _`Reason:-` Admin and Editor had access to assign the editor_.
   - **401 Unauthorized**:
+
     ```json
     {
       "message": "You are not assigned to this blog and cannot edit it."
     }
     ```
+
     _`Reason:-` If not assigned editor try's to edit the bolg_.
 
   - **404 Bad Request**:
@@ -429,6 +467,7 @@ https://blog-management-system-api.vercel.app
   }
   ```
 - **Response**:
+
   - **200 OK**:
     ```json
     {
@@ -443,11 +482,13 @@ https://blog-management-system-api.vercel.app
     ```
     _`Reason:-` Admin only had access to delete_.
   - **401 Unauthorized**:
+
     ```json
     {
       "message": "your not a author"
     }
     ```
+
     _`Reason:-` If another user try's to delete the post_.
 
   - **404 Bad Request**:
@@ -457,7 +498,6 @@ https://blog-management-system-api.vercel.app
     }
     ```
     _`Reason:-` If blog not found_.
-
 
 ## **Comments**
 

@@ -89,6 +89,13 @@ const editBlog = async (req, res) => {
         });
       }
     }
+    if (req.user.role === "admin") {
+      if (blog.author.toString() !== req.user.id.toString()) {
+        return res.status(401).json({
+          message: "You are not a author of blog.",
+        });
+      }
+    }
     const { tittle, content } = req.body;
     if (tittle === "" || !tittle) {
       return res.status(400).json({ message: "blog tittle required" });
@@ -101,6 +108,7 @@ const editBlog = async (req, res) => {
     await blog.save();
     return res.status(200).json({ message: "blog edited successfully" });
   } catch (err) {
+    console.log(err);
     return res.status(404).json({ message: "Something went worng" });
   }
 };
@@ -112,8 +120,8 @@ const deleteBlog = async (req, res) => {
     if (!blog) {
       return res.status(404).json({ message: "blog not found" });
     }
-    if(blog.author.toString() !== req.user.id.toString()){
-      return res.status(401).json({message:"your not a author"})
+    if (blog.author.toString() !== req.user.id.toString()) {
+      return res.status(401).json({ message: "your not a author" });
     }
     await Blog.deleteOne({ _id: blogId });
     await Comment.deleteMany({ blog: blogId });
