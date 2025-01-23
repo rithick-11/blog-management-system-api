@@ -369,7 +369,7 @@ https://blog-management-system-api.vercel.app
 
 ### **4. Assign editor to Blog (Admin or Assigned Editor)**
 
-- **URL**: `/blogs/{id}`
+- **URL**: `/blogs/asingedtior/{blogId}/{editorId}`
 - **Method**: `GET`
 - **Description**: Assigning editor to blog.
 - **Request Header**:
