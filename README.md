@@ -8,6 +8,17 @@ https://blog-management-system-api.vercel.app
 
 ---
 
+To make API testing easier, I have prepared a Postman collection containing all the available endpoints with pre-configured requests and sample data.
+
+### **How to Use the Postman Collection**
+ - Download or import the Postman collection from the link below.
+ - Update the environment variables (e.g., `baseUrl`, `token`) as needed.
+ - Start testing the API endpoints directly from Postman.
+
+Postman Collection Link : [Click here](https://elements.getpostman.com/redirect?entityId=41326442-8dc774ca-63c4-4a71-9a58-2820c8e17e41&entityType=collection)
+
+---
+
 | Role   | Access to Endpoints                                                           |
 | ------ | ----------------------------------------------------------------------------- |
 | Admin  | Can create, edit, delete blogs; assign blogs to editors; manage all comments. |
