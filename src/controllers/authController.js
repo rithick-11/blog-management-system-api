@@ -109,7 +109,7 @@ const login = async (req, res) => {
     );
 
     const userData = await User.findOne(
-      { _id: req.user.id },
+      { _id: user._id },
       {
         verificationtoken: 0,
         verificationvalidity: 0,
@@ -117,9 +117,10 @@ const login = async (req, res) => {
         __v: 0,
       }
     );
-
     return res.status(200).json({ token, user: userData });
   } catch (err) {
+    console.log(err);
+
     return res.status(404).json({ message: `somethig went worng` });
   }
 };
